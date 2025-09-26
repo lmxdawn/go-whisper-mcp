@@ -70,7 +70,7 @@ docker run --rm --gpus all -p 28796:28796 \
   go-whisper-mcp:gpu
 ```
 
-### 方式 C：本地运行（仅供调试）
+### 方式 C：本地运行（仅供调试`Ubuntu22.4`已验证）
 
 > 生产建议使用 Docker/Compose。GPU 本地编译依赖 CUDA/ggml-cuda 链接环境，优先使用 GPU 镜像。
 
@@ -78,9 +78,9 @@ docker run --rm --gpus all -p 28796:28796 \
 
 ```bash
 # 让 cgo 找到头文件
-export C_INCLUDE_PATH="$(pwd)/whisper/linux/cpu/include:$(pwd)/whisper/linux/cpu/ggml/include"
+export C_INCLUDE_PATH="$(pwd)/whisper/linux/include:$(pwd)/whisper/linux/ggml/include"
 # 让链接器找到静态库
-export LIBRARY_PATH="$(pwd)/whisper/linux/cpu/build_go/src:$(pwd)/whisper/linux/cpu/build_go/ggml/src"
+export LIBRARY_PATH="$(pwd)/whisper/linux/build_go/cpu/src:$(pwd)/whisper/linux/build_go/cpu/ggml/src"
 # 系统库（顺序靠后避免 DSO missing）
 export CGO_LDFLAGS="-Wl,--no-as-needed -ldl -lpthread -lstdc++ -lm"
 # 可选：去掉 VCS 信息避免 128 报错
