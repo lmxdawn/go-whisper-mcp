@@ -2,13 +2,12 @@ package configs
 
 import (
 	"os"
-	"path/filepath"
-)
-
-const (
-	MediaDir = "whisper_media"
 )
 
 func GetMediaPath() string {
-	return filepath.Join(os.TempDir(), MediaDir)
+	mediaDir := "./whisper_media"
+	if s := os.Getenv("MEDIA_DIR"); len(s) > 0 {
+		mediaDir = s
+	}
+	return mediaDir
 }

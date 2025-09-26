@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-audio/wav"
-	pkg "go-whisper-mcp/pkg"
+	"go-whisper-mcp/pkg"
 	"go-whisper-mcp/pkg/downloader"
 	"go-whisper-mcp/whisper"
 	"os"
