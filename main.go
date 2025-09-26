@@ -7,6 +7,10 @@ import (
 )
 
 func main() {
+	if os.Getenv("NATIVE_LOG_SILENT") != "0" { // 缺省静音；设置 0 则打开
+		DisableNativeLogs()
+	}
+
 	var (
 		flagDefaultM string // 浏览器二进制文件路径
 	)
