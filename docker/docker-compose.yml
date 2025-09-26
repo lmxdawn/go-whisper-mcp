@@ -1,0 +1,41 @@
+services:
+  go-whisper-mcp-cpu:
+    image: go-whisper-mcp:cpu
+    container_name: go-whisper-mcp-cpu
+    ports:
+      - "28796:28796"
+    environment:
+      - MODELS_DIR=./models # 模型的保存路径
+      - MEDIA_DIR=./whisper_media # 网络资源下载路径
+    volumes:
+      - ./models:/app/models
+      - ./whisper_media:/app/whisper_media
+      - ./samples:/app/samples
+    restart: unless-stopped
+    profiles: ["cpu"]
+
+  go-whisper-mcp-gpu:
+    image: go-whisper-mcp:gpu
+    container_name: go-whisper-mcp-gpu
+    ports:
+      - "28796:28796"
+    environment:
+      - MODELS_DIR=./models # 模型的保存路径
+      - MEDIA_DIR=./whisper_media # 网络资源下载路径
+      # 这两个变量对部分环境更稳（尤其 Desktop / WSL）
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    volumes:
+      - ./models:/app/models
+      - ./whisper_media:/app/whisper_media
+      - ./samples:/app/samples
+    # 需要 Docker Desktop 开启 GPU / 或 Linux + NVIDIA Container Toolkit
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ "gpu" ]
+    restart: unless-stopped
+    profiles: ["gpu"]
