@@ -43,17 +43,21 @@ func registerTools(server *mcp.Server, appServer *AppServer) {
 	mcp.AddTool(server,
 		&mcp.Tool{
 			Name:        "transcribe",
-			Description: "Transcribe mp4/wav to text using whisper.cpp (supports model/lang/threads).",
+			Description: "将 mp4/wav 转录为文本（支持 model/lang/threads）",
 		},
 		func(ctx context.Context, req *mcp.CallToolRequest, args TranscribeArgs) (*mcp.CallToolResult, any, error) {
-			argsMap := map[string]interface{}{
+			argsMap := map[string]any{
 				"in_paths": convertStringsToInterfaces(args.InPaths),
 				"model":    args.Model,
 				"lang":     args.Lang,
 				"t":        args.Threads,
 			}
-			result := appServer.handleTranscribe(ctx, argsMap)
-			return convertToMCPResult(result), nil, nil
+			r := appServer.handleTranscribe(ctx, argsMap) // *MCPToolResult
+
+			// 1) 内容区：摘要文本 / 图片（不塞 structured）
+			res := convertToMCPResult(r)
+
+			return res, nil, nil
 		},
 	)
 
@@ -86,8 +90,9 @@ func convertToMCPResult(result *MCPToolResult) *mcp.CallToolResult {
 	}
 
 	return &mcp.CallToolResult{
-		Content: contents,
-		IsError: result.IsError,
+		StructuredContent: result.StructuredContent,
+		Content:           contents,
+		IsError:           result.IsError,
 	}
 }
 

@@ -16,39 +16,6 @@ type SuccessResponse struct {
 	Message string `json:"message,omitempty"`
 }
 
-// JSON-RPC 相关类型
-
-// JSONRPCRequest JSON-RPC 请求
-type JSONRPCRequest struct {
-	JSONRPC string `json:"jsonrpc"`
-	Method  string `json:"method"`
-	Params  any    `json:"params,omitempty"`
-	ID      any    `json:"id"`
-}
-
-// JSONRPCResponse JSON-RPC 响应
-type JSONRPCResponse struct {
-	JSONRPC string        `json:"jsonrpc"`
-	Result  any           `json:"result,omitempty"`
-	Error   *JSONRPCError `json:"error,omitempty"`
-	ID      any           `json:"id"`
-}
-
-// JSONRPCError JSON-RPC 错误
-type JSONRPCError struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-	Data    any    `json:"data,omitempty"`
-}
-
-// MCP 相关类型
-
-// MCPToolCall MCP 工具调用
-type MCPToolCall struct {
-	Name      string                 `json:"name"`
-	Arguments map[string]interface{} `json:"arguments"`
-}
-
 // MCPToolResult MCP 工具结果
 type MCPToolResult struct {
 	Content           []MCPContent `json:"content"`

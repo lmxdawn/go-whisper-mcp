@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -15,7 +16,7 @@ func (a *AppServer) handleTranscribe(ctx context.Context, args map[string]interf
 	inPaths, _ := args["in_paths"].([]interface{})
 	model, _ := args["model"].(string)
 	lang, _ := args["lang"].(string)
-	t, _ := args["t"].(float64)
+	t, _ := args["t"].(int)
 
 	var mediaPaths []string
 	for _, path := range inPaths {

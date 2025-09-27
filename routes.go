@@ -1,6 +1,11 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+)
 
 func setupRoutes(a *AppServer) *gin.Engine {
 	// 设置模式
@@ -14,8 +19,15 @@ func setupRoutes(a *AppServer) *gin.Engine {
 	// 健康检查
 	r.GET("/health", healthHandler)
 
-	// MCP over HTTP
-	mcpHandler := a.StreamableHTTPHandler()
+	// MCP 端点 - 使用官方 SDK 的 Streamable HTTP Handler
+	mcpHandler := mcp.NewStreamableHTTPHandler(
+		func(r *http.Request) *mcp.Server {
+			return a.mcpServer
+		},
+		&mcp.StreamableHTTPOptions{
+			JSONResponse: true, // 支持 JSON 响应
+		},
+	)
 	r.Any("/mcp", gin.WrapH(mcpHandler))
 	r.Any("/mcp/*path", gin.WrapH(mcpHandler))
 
