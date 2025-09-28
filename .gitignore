@@ -16,6 +16,6 @@
 logs
 models
 samples
-whisper_media
+media
 
 go-whisper-mcp*

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/go-audio/wav"
@@ -51,6 +52,15 @@ func NewWhisperService() *WhisperService {
 func (s *WhisperService) Transcribe(ctx context.Context, req *TranscribeRequest) (*TranscribeBatchResponse, error) {
 
 	inPaths := req.InPaths
+	if len(inPaths) == 0 {
+		return &TranscribeBatchResponse{
+			ModelPath: "",
+			Language:  "",
+			Threads:   0,
+			DurationS: "",
+			Results:   []*TranscribeResponse{},
+		}, nil
+	}
 	modelSpec := req.Model
 	lang := req.Lang
 	threads := req.Threads
@@ -73,18 +83,34 @@ func (s *WhisperService) Transcribe(ctx context.Context, req *TranscribeRequest)
 	start := time.Now()
 	results := make([]*TranscribeResponse, 0, len(inPathFiles))
 	for _, path := range inPaths {
+
+		// 判断是否存在json
+		mediaJson := strings.TrimSuffix(path, filepath.Ext(path)) + ".json"
+		// 1. 读取JSON文件
+		if data, err := os.ReadFile(mediaJson); err == nil {
+			// 2. 解析JSON到结构体
+			var rr TranscribeResponse
+			if err := json.Unmarshal(data, &rr); err == nil {
+				results = append(results, &rr)
+				continue
+			}
+		}
+
 		batch, err := s.transcribeAudioBatch(ctx, modelPath, lang, threads, path)
 		isSuccess := true
 		if err != nil {
 			isSuccess = false
 			batch = &TranscribeResponse{}
 		}
-		results = append(results, &TranscribeResponse{
+		bb := &TranscribeResponse{
 			Path:      path,
 			IsSuccess: isSuccess,
 			DurationS: batch.DurationS,
 			Segments:  batch.Segments,
-		})
+		}
+		results = append(results, bb)
+		jdata, _ := json.MarshalIndent(bb, "", "  ")
+		_ = os.WriteFile(mediaJson, jdata, 0755)
 	}
 
 	return &TranscribeBatchResponse{

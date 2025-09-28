@@ -5,12 +5,11 @@ services:
     ports:
       - "28796:28796"
     environment:
-      - MODELS_DIR=./models # 模型的保存路径
-      - MEDIA_DIR=./whisper_media # 网络资源下载路径
+      - MODELS_DIR=/app/models # 模型的保存路径
+      - MEDIA_DIR=/app/samples # 网络资源下载路径
       - NATIVE_LOG_SILENT=1 #不打印日志
     volumes:
       - ./models:/app/models
-      - ./whisper_media:/app/whisper_media
       - ./samples:/app/samples
     restart: unless-stopped
     profiles: ["cpu"]
@@ -21,15 +20,14 @@ services:
     ports:
       - "28796:28796"
     environment:
-      - MODELS_DIR=./models # 模型的保存路径
-      - MEDIA_DIR=./whisper_media # 网络资源下载路径
-      - NATIVE_LOG_SILENT=1 #不打印日志
+      - MODELS_DIR=/app/models # 模型的保存路径
+      - MEDIA_DIR=/app/samples # 网络资源下载路径
+      - NATIVE_LOG_SILENT=0 #不打印日志
       # 这两个变量对部分环境更稳（尤其 Desktop / WSL）
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
     volumes:
       - ./models:/app/models
-      - ./whisper_media:/app/whisper_media
       - ./samples:/app/samples
     # 需要 Docker Desktop 开启 GPU / 或 Linux + NVIDIA Container Toolkit
     deploy:

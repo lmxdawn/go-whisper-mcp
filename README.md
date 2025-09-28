@@ -29,7 +29,7 @@ sudo apt update && sudo apt install -y ffmpeg
 ```
 
 ---
-
+[telegram-webhook.bat](../../../../local/video/go-whisper-mcp/telegram-webhook.bat)
 ## 🚀 快速开始
 
 ### 方式 A：Docker Compose（推荐）
@@ -43,7 +43,7 @@ docker compose --profile cpu up -d
 # 仅 GPU 模式（Linux 需 nvidia-container-toolkit；Desktop 请开启 Use NVIDIA GPU）
 docker compose --profile gpu up -d
 
-# 停止
+# 停止[docker-compose.yml](../../../../local/video/go-whisper-mcp/docker-compose.yml)
 docker compose down
 ```
 

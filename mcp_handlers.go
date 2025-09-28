@@ -1,9 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
-
 	"github.com/sirupsen/logrus"
 )
 
@@ -33,7 +34,7 @@ func (a *AppServer) handleTranscribe(ctx context.Context, args map[string]interf
 		InPaths:   mediaPaths,
 		Model:     model,
 		Lang:      lang,
-		Threads:   int(t),
+		Threads:   t,
 		ModelsDir: a.modelsDir,
 	}
 
@@ -42,13 +43,31 @@ func (a *AppServer) handleTranscribe(ctx context.Context, args map[string]interf
 		return &MCPToolResult{Content: []MCPContent{{Type: "text", Text: "转换失败: " + err.Error()}}, IsError: true}
 	}
 
-	// 生成摘要
-	resultCount := len(transcribeBatchResponse.Results)
-	summary := fmt.Sprintf("ok (%d results, %.2fs total)", resultCount, transcribeBatchResponse.DurationS)
+	var list []string
+
+	for _, result := range transcribeBatchResponse.Results {
+		var buffer bytes.Buffer
+		for _, segment := range result.Segments {
+			buffer.WriteString(segment.Text)
+		}
+		list = append(list, buffer.String()+",")
+	}
+
+	jsonData, err := json.MarshalIndent(list, "", "  ")
+	if err != nil {
+		return &MCPToolResult{
+			Content: []MCPContent{{
+				Type: "text",
+				Text: fmt.Sprintf("转换成功，但序列化失败: %v", err),
+			}},
+			IsError: true,
+		}
+	}
 
 	return &MCPToolResult{
-		Content:           []MCPContent{{Type: "text", Text: summary}},
-		StructuredContent: transcribeBatchResponse, // 直接塞结构体
-		IsError:           false,
+		Content: []MCPContent{{
+			Type: "text", Text: string(jsonData),
+		}},
+		IsError: false,
 	}
 }

@@ -15,6 +15,7 @@ docker
 
 samples
 models
+media
 whisper/linux
 
 go-whisper-mcp
